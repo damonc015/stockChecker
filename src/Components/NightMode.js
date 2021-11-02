@@ -1,6 +1,6 @@
 import React,{useContext} from 'react';
 import {Night} from "../App";
-import { BsMoon } from "react-icons/bs";
+import { BsMoonFill } from "react-icons/bs";
 
 const NightMode = () => {
 
@@ -17,7 +17,7 @@ const NightMode = () => {
             setDay(!day);
           }}
         >
-          <BsMoon></BsMoon>
+          <BsMoonFill style={{margin:".2vh"}}></BsMoonFill>
         </button>
       </label>
     </div>

@@ -16,8 +16,14 @@ function App() {
   const [search,setSearch] = useState("")
   // Filtered Search 
   const [stockNames, setStockNames] = useState([]);
+  // Info
+  const [info, setInfo] = useState(false);
+  
   const clear = ()=>{
     setStockNames([]);
+    if (info){
+      setInfo(!info);
+    }
   }
 
   useEffect(() => {
@@ -35,6 +41,8 @@ function App() {
         setSearch,
         stockNames,
         setStockNames,
+        info,
+        setInfo
       }}
     >
       <div className={isNightContainer} onClick={clear}>

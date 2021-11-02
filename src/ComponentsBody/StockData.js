@@ -25,21 +25,8 @@ const StockData = () => {
   return (
     <div
       className="stockDataContainer"
-      style={
-        day
-          ? null
-          : {
-              backgroundColor: "#343e4b",
-              boxShadow: "-1rem .75rem .5px #49576a",
-            }
-      }
     >
-      <h2
-        className="stockHeaders"
-        style={day ? null : { backgroundColor: "#49576a" }}
-      >
-        Live Stock Price
-      </h2>
+      <h2 className="stockHeaders">Live Stock Price</h2>
       <div
         className="stock"
         style={day ? null : { borderBottom: "1px solid #dfd6cc" }}
@@ -49,7 +36,7 @@ const StockData = () => {
         <h4 className="stockItem">Price</h4>
         <h4 className="stockItem">Remove</h4>
       </div>
-      {sample   ?(
+      {sample ? (
         <div className="stockSample">
           <p className="stockItem">Example Stock</p>
           <p className="stockItem">Test</p>

@@ -20,22 +20,9 @@ const Alert = () => {
     // Container
     <div
       className="alertContainer"
-      style={
-        day
-          ? null
-          : {
-              backgroundColor: "#343e4b",
-              boxShadow: "1rem .75rem .5px #49576a",
-            }
-      }
     >
       {/* Header */}
-      <h2
-        className="stockHeaders"
-        style={day ? null : { backgroundColor: "#49576a" }}
-      >
-        Adjust Alerts
-      </h2>
+      <h2 className="stockHeaders">Adjust Alerts</h2>
 
       {/* Content Header*/}
       <div
@@ -48,60 +35,63 @@ const Alert = () => {
       </div>
 
       {/* Content Sample */}
-      {sample?
-      <div
-        className={alertPercentS?"alert alertAnimation":"alert"}
-        style={day ? null : { borderBottom: "1px solid #dfd6cc" }}
-      >
-        {/* Enable/Disable */}
-        <div className="alertItem">
-          <button
-            className="enableDisable"
-            style={
-              enableS
-                ? null
-                : { backgroundColor: "rgb(255,86,86)", color: "white" }
-            }
-            onClick={() => setEnableS(!enableS)}
-          >
-            {enableS ? "Enabled" : "Disabled"}
-            {enableS ? (
-              <AiFillBell style={{ margin: "0 0 -.25vh .5vh" }}></AiFillBell>
-            ) : (
-              <FaBellSlash style={{ margin: "0 0 -.25vh .5vh" }}></FaBellSlash>
-            )}
-          </button>
-        </div>
-        {/* Alert Percent */}
-        <div className="alertPercent alertItem">
-          <p>{alertPercentS}</p>
-          <form onSubmit={(e)=>e.preventDefault()}>
+      {sample ? (
+        <div
+          className={alertPercentS ? "alert alertAnimation" : "alert"}
+          style={day ? null : { borderBottom: "1px solid #dfd6cc" }}
+        >
+          {/* Enable/Disable */}
+          <div className="alertItem">
+            <button
+              className="enableDisable"
+              style={
+                enableS
+                  ? null
+                  : { backgroundColor: "rgb(255,86,86)", color: "white" }
+              }
+              onClick={() => setEnableS(!enableS)}
+            >
+              {enableS ? "Enabled" : "Disabled"}
+              {enableS ? (
+                <AiFillBell style={{ margin: "0 0 -.25vh .5vh" }}></AiFillBell>
+              ) : (
+                <FaBellSlash
+                  style={{ margin: "0 0 -.25vh .5vh" }}
+                ></FaBellSlash>
+              )}
+            </button>
+          </div>
+          {/* Alert Percent */}
+          <div className="alertPercent alertItem">
+            <p>{alertPercentS}</p>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <input
+                type="number"
+                className="alertItem"
+                min={-10}
+                max={10}
+                step={0.01}
+                value={alertPercentS}
+                onChange={(e) => {
+                  setAlertPercentS(e.target.valueAsNumber);
+                }}
+              />
+            </form>
+          </div>
+          {/* Volume */}
           <input
-            type="number"
+            type="range"
             className="alertItem"
-            min={-10}
-            max={10}
+            min={0}
+            max={1}
             step={0.01}
-            value={alertPercentS}
+            value={volumeS}
             onChange={(e) => {
-              setAlertPercentS(e.target.valueAsNumber);
-            }} 
+              setVolumeS(e.target.valueAsNumber);
+            }}
           />
-          </form>
         </div>
-        {/* Volume */}
-        <input
-          type="range"
-          className="alertItem"
-          min={0}
-          max={1}
-          step={0.01}
-          value={volumeS}
-          onChange={(e) => {
-            setVolumeS(e.target.valueAsNumber);
-          }}
-        />
-      </div>:null}
+      ) : null}
     </div>
   );
 };

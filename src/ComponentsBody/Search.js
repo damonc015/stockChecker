@@ -43,12 +43,8 @@ const Search = () => {
     }
   },[ring])
 
-  useEffect(()=>{
-    audio.volume=1;
-  },[])
-
     return (
-      <div className="searchContainer" style={day?null:{ backgroundColor: "#343e4b"}}>
+      <div className="searchContainer" style={day?null:{ backgroundColor: "#141e28"}}>
         <h1>Stock Alerter <AiFillBell className={ring?"bellring":"bell"} onClick={addRing}></AiFillBell></h1>
         <form className="searchBar" onSubmit={defaultSelect}>
           <input
