@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { List } from "./index";
 import { Night } from "../App";
 import { GoCheck } from "react-icons/go";
@@ -12,84 +12,91 @@ const CurrentTick = () => {
   const {
     currentStock,
     setCurrentStock,
-    stocks,
-    setStocks,
+    stockList,
+    setStockList,
     storePriceHistory,
+    storePriceAllHistory,
+    setStorePriceAllHistory
   } = useContext(List);
 
-  // storePriceHistory.map((val) => {
-  //   return val.close})
-const isPositive = ()=>{
-    if(lineData.datasets[0].data[0]>lineData.datasets[0].data[data.length-1]){
-    console.log("green")
-  }else{
-    console.log("red")
-  }
-}
+const lineDataData = storePriceHistory?storePriceHistory.filter((val,index) => 
+{
+  return index%3===0})
+    .map((val)=>{return val.close}):[];
 
-  const lineData = {
-    labels:[2,3,4,5,6,7,8,9,10],
-    datasets: [
-      {
-        label: currentStock.symbol,
-        data: [1,2,3,4,2],
-        fill: false,
-        backgroundColor: day ? "black" : "white",
-        borderColor: day ? "black" : "white",
-      }
-    ]
-  };
+const lineDataLabel = storePriceHistory?storePriceHistory.filter((val,index) => 
+{
+  return index%3===0})
+    .map((val)=>{return val.label}):[];
 
-  const lineDataOptions = {
-    options: {
-      responsive: true,
-      aspectRatio: 2,
-      title: {
-        display: true,
-        text: "Chart.js Line Chart",
+const openPrice = storePriceHistory?Number.parseFloat(storePriceHistory[0].open).toFixed(2):"-";
+const highPrice = storePriceHistory?Number.parseFloat(storePriceHistory[0].high).toFixed(2):"-";
+const lowPrice = storePriceHistory?Number.parseFloat(storePriceHistory[0].low).toFixed(2):"-";
+const currentIsPositive =
+  lineDataData[0] > lineDataData[lineDataData.length - 1] ? "#52ad59" : "red";
+
+const currentLineData = {
+  labels: lineDataLabel.reverse(),
+  datasets: [
+    {
+      label: currentStock.symbol,
+      data: lineDataData.reverse(),
+      pointRadius: 0,
+      fill: false,
+      backgroundColor: day ? "#e9dfd4" : "#141e28",
+      borderColor: currentIsPositive
+    },
+  ],
+};
+
+const currentLineDataOptions = {
+  responsive: true,
+  aspectRatio: 1.5,
+  scales: {
+    x: {
+      grid: {
+        display: false,
+        color: day ? "#7a7a7a" : "#858585",
       },
-      scales: {
-        xAxes: [
-          {
-            display: true,
-            gridLines: {
-              display: false,
-            },
-            scaleLabel: {
-              display: true,
-              labelString: "Month",
-            },
-          },
-        ],
-        yAxes: [
-          {
-            display: true,
-            gridLines: {
-              display: false,
-            },
-            scaleLabel: {
-              display: true,
-              labelString: "Value",
-            },
-          },
-        ],
+      ticks: {
+        color: day ? "black" : "white",
       },
     },
-  };
+    y: {
+      grid: {
+        color: day ? "#7a7a7a" : "#858585",
+      },
+      ticks: {
+        color: day ? "black" : "white",
+      },
+    },
+  },
+  plugins: {
+    legend: {
+      display: true,
+      labels: {
+        color: day ? "black" : "white",
+      },
+    },
+    title: {
+      display: true,
+      text: "Price History (6 Months)",
+    },
+  },
+};
 
-  // Add/Remove to Watchlist
-  const add = () => {
-    setStocks([...currentStock.symbol]);
-    setCurrentStock("");
-    console.log(stocks);
-  };
-  const remove = () => {
-    setCurrentStock("");
-  };
+// Add/Remove to Watchlist
+const add = () => {
+  if(stockList.filter((val)=>val.Tick === currentStock.symbol).length>0)return setCurrentStock("");
 
-  //   useEffect(()=>{
-
-  // },[currentStock]);
+  setStockList([...stockList, {Tick:currentStock.symbol,Name:currentStock.name}]);
+  setStorePriceAllHistory([...storePriceAllHistory,{Symbol:currentStock.symbol,History:storePriceHistory}]);
+  
+  setCurrentStock("");
+};
+const remove = () => {
+  setCurrentStock("");
+};
 
   if (currentStock) {
     return (
@@ -103,13 +110,18 @@ const isPositive = ()=>{
       >
         <div className="currentStockData">
           <div className="sdataContainer">
-            <h2 className="data">
+            <h2 className="data1">
               {currentStock.name} ({currentStock.symbol})
             </h2>
-            <h2 className="data">Last Price : ${currentStock.price}</h2>
+            <h2 className="data">Last Price : ${Number.parseFloat(currentStock.price).toFixed(2)}</h2>
+            <h2 className="data">
+              Open Price: ${openPrice}
+            </h2>
+            <h2 className="data">High: ${highPrice}</h2>
+            <h2 className="data">Low: ${lowPrice}</h2>
           </div>
           <div className="chartContainer">
-            <Line data={lineData} options={lineDataOptions}></Line>
+            <Line data={currentLineData} options={currentLineDataOptions}></Line>
           </div>
         </div>
 

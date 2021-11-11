@@ -17,7 +17,7 @@ const Time = () => {
   useEffect(() => {
     var timer = setInterval(() => {
       setTime(new Date());
-
+      
       // 4pm-9:30am
       if (time.getHours() * 60 + time.getMinutes() >= 960) {
         setTimeLeft(

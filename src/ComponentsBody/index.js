@@ -10,8 +10,9 @@ export const List = createContext();
 const Index = () => {
   // Watchlist
   const [stocks, setStocks] = useState([]);
+  // Symbols to be parsed by websocket
+  const [stockList, setStockList] = useState([]);
   const { search, stockNames, setStockNames } = useContext(Night);
-  const stockList = ["NIO", "SPY"];
   // Preview Stock
   const [currentStock, setCurrentStock] = useState("");
   // WebSocket Api Key
@@ -20,10 +21,14 @@ const Index = () => {
   const apiKeyNames = "365fdc617d44b4b70556e939fbbb42f3";
   //Fetched Stock List and Current Stock
   const [storeData, setStoreData] = useState([]);
-  const [storePriceHistory, setStorePriceHistory] = useState([1]);
+  const [storePriceHistory, setStorePriceHistory] = useState("");
+  const [storePriceAllHistory, setStorePriceAllHistory] = useState([]);
   // Alarm Sound
   const audio = new Audio(sound);
   const dateRange = useRef(0);
+
+  // console.log(storePriceHistory);
+  // console.log(storePriceAllHistory);
 
   // Date Range for Api
   const findDateRange = () => {
@@ -37,8 +42,8 @@ const Index = () => {
     if (todayDay < 10) {
       todayDay = `0${todayDay}`;
     }
-    const lastTwoYears = todayYear - 2;
-    dateRange.current = `from=${lastTwoYears}-${todayMonth}-${todayDay}&to=${todayYear}-${todayMonth}-${todayDay}`;
+    const lastSixMonths = todayMonth - 6;
+    dateRange.current = `from=${todayYear}-${lastSixMonths}-${todayDay}&to=${todayYear}-${todayMonth}-${todayDay}`;
   };
 
   // Connect to Stock List
@@ -60,42 +65,24 @@ const Index = () => {
   // Connect to current stock
   useEffect(() => {
     const historyURL = `https://financialmodelingprep.com/api/v3/historical-price-full/${currentStock.symbol}?${dateRange.current}&apikey=${apiKeyNames}`;
-    try {
-      let controller = new AbortController();
-      (async () => {
-        const response = await fetch(historyURL, {
-          signal: controller.signal,
-        });
-        const priceHistory = await response.json();
-        setStorePriceHistory(priceHistory.historical);
-      })();
-      return () => controller?.abort();
-    } catch {
-      console.log("Can't find searched stock");
+    if (currentStock) {
+      try {
+        let controller = new AbortController();
+        (async () => {
+          const response = await fetch(historyURL, {
+            signal: controller.signal,
+          });
+          const priceHistory = await response.json();
+          setStorePriceHistory(priceHistory.historical);
+        })();
+        return () => controller?.abort();
+      } catch {
+        console.log("Can't find searched stock");
+      }
     }
   }, [currentStock]);
 
   useEffect(() => {
-    // Websocket Connection
-    (function connect() {
-      const socket = new WebSocket(`wss://ws.finnhub.io?token=${apiKey}`);
-      socket.onopen = () => {
-        console.log("Websocket connected");
-        stockList.map((stock) => {
-          return socket.send(
-            JSON.stringify({ type: "subscribe", symbol: `${stock}` })
-          );
-        });
-      };
-
-      socket.onmessage = (e) => {
-        setStocks(JSON.parse(e.data));
-      };
-
-      socket.onclose = () => {
-        console.log("Websocket disconnected");
-      };
-    })();
     // Search Filter
     (function filterNames() {
       try {
@@ -119,17 +106,61 @@ const Index = () => {
     })();
   }, [search]);
 
+  // if (stocks){
+  //   try{
+  //     console.log(stocks)
+  //   // console.log(stocks[0].data[0].p.toFixed(2))
+  //   }catch{
+  //     console.log("hi")
+  //   }
+  // }
+
+  // useEffect(()=>{
+  //     // Websocket Connection
+  //     const socket = new WebSocket(`wss://ws.finnhub.io?token=${apiKey}`);
+  //     if (stockList.length > 0){
+  //       socket.onopen = () => {
+  //         console.log("Websocket connected");
+  //             // socket.send(
+  //             //   JSON.stringify({ type: "subscribe", symbol: "AAPL" })
+  //             // );
+  //             // socket.send(
+  //             //   JSON.stringify({ type: "subscribe", symbol: "BINANCE:BTCUSDT" })
+  //             // );
+  //         // stockList.map((stock) => {
+  //         //   return socket.send(
+  //         //     JSON.stringify({ type: "subscribe", symbol: `${stock}` })
+  //         //   );
+  //         // });
+  //       };
+  //       socket.onmessage = (e) => {
+  //         setStocks([...stocks,JSON.parse(e.data)]);
+  //         stockList.map((stock) => {
+  //           return socket.send(
+  //             JSON.stringify({type: "unsubscribe",symbol: `${stock}`,})
+  //           );
+  //         });
+  //       };
+  //       socket.onclose = () => {
+  //         console.log("Websocket disconnected");
+  //       };
+  //     }
+  // },[stockList])
+
   return (
     <List.Provider
       value={{
+        stocks,
         stockNames,
         setStockNames,
         currentStock,
         setCurrentStock,
-        stocks,
-        setStocks,
+        stockList,
+        setStockList,
         storePriceHistory,
         audio,
+        storePriceAllHistory,
+        setStorePriceAllHistory
       }}
     >
       <section className="bodyContainer">

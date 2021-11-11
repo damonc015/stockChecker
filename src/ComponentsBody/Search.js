@@ -3,7 +3,6 @@ import { Night } from "../App";
 import {List} from "./index";
 import {AiFillBell} from "react-icons/ai";
 
-
 const Search = () => {
 
   const {search,setSearch,day}= useContext(Night);
