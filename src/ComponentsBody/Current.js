@@ -7,16 +7,31 @@ import { Line } from "react-chartjs-2";
 
 const CurrentTick = () => {
   // Global states
-  const { day } = useContext(Night);
+  const { day,settings,setSettings} = useContext(Night);
   // Body states
   const {
+    stockPrice,
+    setStockPrice,
     currentStock,
     setCurrentStock,
     stockList,
     setStockList,
     storePriceHistory,
     storePriceAllHistory,
-    setStorePriceAllHistory
+    setStorePriceAllHistory,
+    enableRD,
+    setEnableRD,
+    alertPercentRD,
+    setAlertPercentRD,
+    alertPriceRD,
+    setAlertPriceRD,
+    alertedRD,
+    setAlertedRD,
+    priceOrPercentRD,
+    setPriceOrPercentRD,
+    volumeRD,
+    setVolumeRD,
+    socket
   } = useContext(List);
 
 const lineDataData = storePriceHistory?storePriceHistory.filter((val,index) => 
@@ -35,11 +50,12 @@ const lowPrice = storePriceHistory?Number.parseFloat(storePriceHistory[0].low).t
 const currentIsPositive =
   lineDataData[0] > lineDataData[lineDataData.length - 1] ? "#52ad59" : "red";
 
+
 const currentLineData = {
   labels: lineDataLabel.reverse(),
   datasets: [
     {
-      label: currentStock.symbol,
+      label: currentStock?currentStock.symbol:"ABC",
       data: lineDataData.reverse(),
       pointRadius: 0,
       fill: false,
@@ -85,13 +101,28 @@ const currentLineDataOptions = {
   },
 };
 
+
 // Add/Remove to Watchlist
 const add = () => {
   if(stockList.filter((val)=>val.Tick === currentStock.symbol).length>0)return setCurrentStock("");
 
   setStockList([...stockList, {Tick:currentStock.symbol,Name:currentStock.name}]);
   setStorePriceAllHistory([...storePriceAllHistory,{Symbol:currentStock.symbol,History:storePriceHistory}]);
-  
+  setStockPrice([...stockPrice,10])
+
+  //   Enable
+  setEnableRD([...enableRD, false]);
+  // Alert States
+  setAlertPercentRD([...alertPercentRD, 10]);
+  setAlertPriceRD([...alertPriceRD, 10]);
+  setAlertedRD([...alertedRD, false]);
+  setPriceOrPercentRD([...priceOrPercentRD, true]);
+  setVolumeRD([...volumeRD, 0.5]);
+  // Settings
+  setSettings([...settings, false]);
+
+  // socket.current.send(JSON.stringify({ type: "subscribe", symbol: currentStock.symbol }))
+
   setCurrentStock("");
 };
 const remove = () => {

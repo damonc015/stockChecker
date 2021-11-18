@@ -13,10 +13,6 @@ const Search = () => {
     setSearch(e.target.value);
   }
 
-  const offSearch = ()=>{
-    setStockNames([]);
-  }
-
   const defaultSelect = (e)=>{
     e.preventDefault();
     setStockNames([]);
@@ -55,7 +51,7 @@ const Search = () => {
             required
           />
         </form>
-        <div className="searchResults" tabIndex="1" onBlur={offSearch}>
+        <div className="searchResults">
           <ul>
             {stockNames.slice(0, 8).map((stockname) => {
               const { name, symbol } = stockname;
