@@ -43,16 +43,23 @@ const Index = () => {
 
 
   //   Chart Settings
-  const lineDataHistory = storePriceAllHistory?storePriceAllHistory.map((val,index)=>{
-    return val.History.map((val)=>{
-      return Number.parseFloat(val.close).toFixed(2);
-    });
+  const lineDataHistory = storePriceAllHistory?storePriceAllHistory.filter((val)=>{
+    if(val.hasOwnProperty("History")){
+      return val.History.map((val)=>{
+        return Number.parseFloat(val.close).toFixed(2);
+      });
+    }
   }):null
+
+  console.log(storePriceAllHistory);
+  console.log(lineDataHistory)
+ 
   
   const trimLineDataHistory = lineDataHistory?lineDataHistory.map(val=>{
     return val.slice(38).reverse();
   }):null
 
+  console.log(trimLineDataHistory);
   // Date Range for Api
   const findDateRange = () => {
     const todayDate = new Date();

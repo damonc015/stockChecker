@@ -107,15 +107,15 @@ const StockDataExtended = () => {
     return setVolumeRD(copyVolume)
   }
 
-  console.log("StockList",stockList)
-  console.log("StockPrice",stockPrice)
-  console.log("EnableRD",enableRD)
-  console.log("AlertPercentRD",alertPercentRD)
-  console.log("AlertPriceRD",alertPriceRD)
-  console.log("AlertedRD",alertedRD)
-  console.log("PriceOrPercent",priceOrPercentRD)
-  console.log("Volume",volumeRD)
-  console.log("Settings",settings)
+  // console.log("StockList",stockList)
+  // console.log("StockPrice",stockPrice)
+  // console.log("EnableRD",enableRD)
+  // console.log("AlertPercentRD",alertPercentRD)
+  // console.log("AlertPriceRD",alertPriceRD)
+  // console.log("AlertedRD",alertedRD)
+  // console.log("PriceOrPercent",priceOrPercentRD)
+  // console.log("Volume",volumeRD)
+  // console.log("Settings",settings)
 
   const removeThis = (ticker,index) => {
     setStockList(
@@ -273,7 +273,7 @@ const StockDataExtended = () => {
                 ${stockPrice[index]}
               </p>
 
-              <div className="stockItemChart">
+              {/* <div className="stockItemChart">
                 <Line  
                  data={trimLineDataHistory?{
                       labels:trimLineDataHistory[index],
@@ -292,7 +292,7 @@ const StockDataExtended = () => {
                       datasets: [
                         {
                           label: "ABC",
-                          data: [1,2,3,4,5],
+                          data: [1,1,1,1,1],
                           pointRadius: 0,
                           fill: false,
                           backgroundColor: day ? "#e9dfd4" : "#141e28",
@@ -302,7 +302,7 @@ const StockDataExtended = () => {
                     }}
                 options={lineOptions}>
                 </Line>
-                </div>
+                </div> */}
 
               <div className="stockItemIcon">
                 <BsFillGearFill
