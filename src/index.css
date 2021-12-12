@@ -37,7 +37,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 .container {
   min-width: 380px;
-  min-height: 99vh;
+  min-height: 100vh;
   position: relative;
 }
 
@@ -52,7 +52,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 .timer {
   position: relative;
-  height: 10vh;
+  height: 6rem;
   box-shadow: 0vw 0.05vh 5px rgb(139, 136, 136);
   display: flex;
   justify-content: space-between;
@@ -69,7 +69,7 @@ body::-webkit-scrollbar-thumb:hover {
 
 .altTimer {
   position: relative;
-  height: 3vh;
+  height: 3rem;
   box-shadow: 0vw 0.02vh 5px rgb(139, 136, 136);
   display: flex;
   justify-content: space-between;
@@ -189,15 +189,14 @@ h2 {
   justify-content: flex-start;
   align-items: center;
   flex-direction: column;
-  min-height: 80vh;
 }
 
 /* Search Bar */
 
 .searchContainer {
   width: 100vw;
-  height: 14vh;
-  padding: 1vh 0;
+  height: 8rem;
+  padding: 2rem 0 0rem 0;
   background-color: var(--mainColor);
   overflow: visible;
   display: flex;
@@ -205,6 +204,11 @@ h2 {
   justify-content: flex-start;
   align-items: center;
   box-shadow: 0vw 0.05vh 5px rgb(139, 136, 136);
+}
+
+.searchContainer>h1{
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
 .bell {
@@ -245,11 +249,12 @@ h2 {
 }
 
 .search {
-  padding: 1vh 0 1vh 1vw;
-  border-radius: 10px;
+  padding: .75rem;
+  border-radius: 1rem;
   min-width: 25vw;
-  height: 1.5vh;
+  height: 1rem;
   font-size: 0.9rem;
+  margin-top: 1.5vh;
 }
 
 .search:focus {
@@ -323,7 +328,7 @@ ul {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-left: 6vw;
+  margin-left: 2vw;
 }
 
 .data {
@@ -347,7 +352,7 @@ ul {
   align-items: center;
   position: relative;
   z-index: 0;
-  padding: 2vh;
+  margin-right: 2vw;
 }
 
 .acceptStockContainer {
@@ -387,6 +392,17 @@ ul {
   filter: invert(95%);
   cursor: pointer;
 }
+.xButton2 {
+  margin: .5vh 2vw;
+  border: 1px solid black;
+  border-radius: 50%;
+  padding: 0.25vw;
+}
+
+.xButton2:hover {
+  filter: invert(95%);
+  cursor: pointer;
+}
 
 /* Data */
 .bigDataContainer {
@@ -395,6 +411,7 @@ ul {
   justify-content: flex-start;
   align-items: center;
   width: 80vw;
+  min-height: 50vw;
   height: auto;
   border: 0.2vh solid #beac98;
   border-radius: 10px;
@@ -437,7 +454,7 @@ ul {
   border-radius: 10px;
   position: absolute;
   z-index: 20;
-  top: 6vh;
+  top: 3rem;
   left: 2vh;
 }
 
@@ -654,8 +671,19 @@ ul {
   justify-content: flex-start;
   align-items: center;
   position: absolute;
-  top: -3vh;
-  right: 6vh;
+  top: -4rem;
+  right: 3.5rem;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.settingsContainerAlt {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  position: absolute;
+  top: -12.5rem;
+  right: 3.5rem;
   overflow: hidden;
   border-radius: 10px;
 }
@@ -664,16 +692,15 @@ ul {
   width: auto;
   height: auto;
   padding: 0.5vh;
+  border: 1px solid black;
 }
 
 .hideSettings {
-  width: 0;
-  height: 0;
+  display: none;
 }
 
 .daySettings {
   background-color: var(--mainColor);
-  border: 1px solid black;
 }
 
 .nightSettings {
@@ -792,7 +819,7 @@ input[type="number"] {
     margin-left: 0;
   }
   .infoBox{
-    left:-20vh;
+    left:-12rem;
   }
   .showInfo {
     width: 40vw;

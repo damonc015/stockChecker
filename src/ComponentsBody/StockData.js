@@ -10,8 +10,8 @@ import { Line } from "react-chartjs-2";
 export const Samp = createContext();
 
 const StockData = () => {
-  const { day } = useContext(Night);
-  const { audio } = useContext(List);
+  const { day ,sampSettings,setSampSettings} = useContext(Night);
+  const { audio,settings,setSettings } = useContext(List);
   // Sample Stock States
   // Turn on Sample
   const [sample, setSample] = useState(true);
@@ -20,7 +20,7 @@ const StockData = () => {
   const originalTestPrice = useRef(100);
   // Sample Alert States
   // Enable/Disable Alert
-  const [enableS, setEnableS] = useState(true);
+  const [enableS, setEnableS] = useState(false);
   // Alert Percent, Price, and Alert State
   const [alertPercentS, setAlertPercentS] = useState(0);
   const [alertPriceS, setAlertPriceS] = useState(100);
@@ -29,7 +29,6 @@ const StockData = () => {
   // Set Volume
   const [volumeS, setVolumeS] = useState(0.5);
   // Show/Hide Settings
-  const [sampSettings, setSampSettings] = useState(false);
   const dayshowSampSettings = ["settingsContainer"];
 
   if (!sampSettings) {
@@ -43,6 +42,10 @@ const StockData = () => {
   }
   if (sampSettings && !day) {
     dayshowSampSettings.push("nightSettings");
+  }
+
+  const enableSamp = (prev) =>{
+    setSampSettings(!prev)
   }
 
   // Chart settings
@@ -172,16 +175,12 @@ const StockData = () => {
               className="plusMinus"
               style={day ? null : { color: "white" }}
               onClick={() => setTestPrice(testPrice - 1)}
-              // onMouseDown={decPriceS}
-              // onMouseUp={clearIncDecPriceS}
             ></AiOutlineMinus>
             <p>${testPrice}</p>
             <AiOutlinePlus
               className="plusMinus"
               style={day ? null : { color: "white" }}
               onClick={() => setTestPrice(testPrice + 1)}
-              // onMouseDown={incPriceS}
-              // onMouseUp={clearIncDecPriceS}
             ></AiOutlinePlus>
           </div>
 
@@ -196,11 +195,12 @@ const StockData = () => {
           <div className="stockItemIcon">
             <BsFillGearFill
               className="gearIcon"
-              onClick={() => setSampSettings(!sampSettings)}
+              onClick={() => setSampSettings(enableSamp)}
             ></BsFillGearFill>
 
-            <div className={dayshowSampSettings.join(" ")}>
+            <div className={dayshowSampSettings.join(" ")} onClick={e=>e.stopPropagation()}>
               <div className="settingsItem">Example Stock</div>
+              {enableS?(
               <div className="settingsItem">
                 <p
                   style={
@@ -211,20 +211,33 @@ const StockData = () => {
                         }
                   }
                 >
-                  Enable/Disable:
+                 ENABLED
                 </p>
-                {enableS ? (
                   <AiFillBell
                     className="settingsBell"
-                    onClick={() => setEnableS(!enableS)}
+                    onClick={() => {
+                      setEnableS(!enableS)}}
                   ></AiFillBell>
-                ) : (
-                  <FaBellSlash
-                    className="settingsBell"
-                    onClick={() => setEnableS(!enableS)}
-                  ></FaBellSlash>
-                )}
-              </div>
+              </div>):(
+              <div className="settingsItem">
+                <p
+                  style={
+                    day
+                      ? null
+                      : {
+                          backgroundColor: "#1d2d3b",
+                        }
+                  }
+                >
+                  DISABLED
+                </p>
+              <FaBellSlash
+                className="settingsBell"
+                onClick={() => {
+                  setEnableS(!enableS)}}
+                ></FaBellSlash>
+                  </div>)
+                  }
 
               <div className="settingsItem">
                 <p
@@ -334,7 +347,7 @@ const StockData = () => {
           </div>
         </div>
       ) : null}
-      <Samp.Provider value={{sample, sampSettings,setSampSettings}}>
+      <Samp.Provider value={{sample}}>
         <StockDataExtended></StockDataExtended>
       </Samp.Provider>
     </div>

@@ -1,6 +1,7 @@
 import React, {useState, useEffect, createContext} from "react";
 import Setup from "./Components";
 import SetupBody from "./ComponentsBody";
+import Login from "./Login";
 
 
 export const Night = createContext();
@@ -18,11 +19,20 @@ function App() {
   const [stockNames, setStockNames] = useState([]);
   // Info
   const [info, setInfo] = useState(false);
+  // Samp Settings
+  const [sampSettings, setSampSettings] = useState(false);
+  // Settings
+  const [settings, setSettings] = useState([]);
   
   const clear = ()=>{
+    if(search){
     setStockNames([]);
-    if (info){
-      setInfo(!info);
+    }
+    if(sampSettings){
+      setSampSettings(false);
+    }
+    if(settings.includes(true)){
+      setSettings([...settings].fill(false))
     }
   }
 
@@ -42,9 +52,14 @@ function App() {
         stockNames,
         setStockNames,
         info,
-        setInfo
+        setInfo,
+        sampSettings,
+        setSampSettings,
+        settings,
+        setSettings
       }}
     >
+      <Login></Login>
       <div className={isNightContainer} onClick={clear}>
         <Setup></Setup>
         <SetupBody></SetupBody>

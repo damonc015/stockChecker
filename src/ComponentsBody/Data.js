@@ -34,8 +34,11 @@ const Data = () => {
           <GrCircleInformation
             className="info"
             style={day ? null : { filter: "invert(95%)" }}
-            onClick={() => {
-              setInfo(!info);
+            onMouseEnter={() => {
+              setInfo(true);
+            }}
+            onMouseLeave={() => {
+              setInfo(false);
             }}
           ></GrCircleInformation>
         </h1>

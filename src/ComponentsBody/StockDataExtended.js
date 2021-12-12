@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import { Night } from "../App";
 import { List } from "./index";
 import { Samp } from "./StockData";
@@ -12,36 +12,30 @@ import { BsFillGearFill } from "react-icons/bs";
 import { FaTrash, FaBellSlash } from "react-icons/fa";
 
 const StockDataExtended = () => {
-  const { day } = useContext(Night);
-  const { sample, sampSettings, setSampSettings } = useContext(Samp);
+  const { day,sampSettings,setSampSettings,settings,setSettings} = useContext(Night);
+  const { sample } = useContext(Samp);
   const {
-    stocks,
+    stockPrice,
+    setStockPrice,
     stockList,
     setStockList,
     storePriceAllHistory,
     setStorePriceAllHistory,
+    enableRD,
+    setEnableRD,
+    alertPercentRD,
+    setAlertPercentRD,
+    alertPriceRD,
+    setAlertPriceRD,
+    alertedRD,
+    setAlertedRD,
+    priceOrPercentRD,
+    setPriceOrPercentRD,
+    volumeRD,
+    setVolumeRD,
+    trimLineDataHistory,
   } = useContext(List);
 
-  // Alert States
-  // Enable/Disable Alert
-  const [enableRD, setEnableRD] = useState([]);
-  // Alert Percent, Price, and Alert State
-  const [alertPercentRD, setAlertPercentRD] = useState([]);
-  const [alertPriceRD, setAlertPriceRD] = useState([]);
-  const [alertedRD, setAlertedRD] = useState([]);
-  const [priceOrPercentRD, setPriceOrPercentRD] = useState([]);
-  // Set Volume
-  const [volumeRD, setVolumeRD] = useState([]);
-  // Show/Hide Settings
-  const [settings, setSettings] = useState([]);
-  const dayshowSettings = ["settingsContainer"];
-
-  console.log(settings);
-  console.log(sampSettings)
-  //   console.log(enableRD);
-//   console.log(stockList);
-  //   Chart Settings
-  const [lineData, setLineData] = useState("");
   const lineOptions = {
     responsive: true,
     maintainAspectRatio: true,
@@ -67,52 +61,110 @@ const StockDataExtended = () => {
         copySettingsFalse[index]=false;
         return setSettings(copySettingsFalse);
     }
-    let copySettingsTrue = settings.fill(false);
+    let copySettingsTrue = [...settings].fill(false);
     copySettingsTrue[index] = true;
     return setSettings(copySettingsTrue);
   };
 
-  const removeThis = (ticker) => {
+  const updateEnable = (index) =>{
+    let copyEnable = [...enableRD];
+    copyEnable[index] = false;
+    return setEnableRD(copyEnable);
+  }
+
+  const updateDisable = (index) =>{
+    let copyDisable = [...enableRD];
+    copyDisable[index] = true;
+    return setEnableRD(copyDisable);
+  }
+
+  // Price or Percent
+  const updatePrice = (index)=>{
+    let copyPrice = [...priceOrPercentRD];
+    copyPrice[index] = false;
+    return setPriceOrPercentRD(copyPrice)
+  }
+  const updatePercent = (index)=>{
+    let copyPercent = [...priceOrPercentRD];
+    copyPercent[index] = true;
+    return setPriceOrPercentRD(copyPercent)
+  }
+  // Alert Price/Percent
+  const updateAlertPrice = (num,index) =>{
+    let copyAlertPrice = [...alertPriceRD];
+    copyAlertPrice[index] = num;
+    return setAlertPriceRD(copyAlertPrice)
+  }
+  const updateAlertPercent = (num,index) =>{
+    let copyAlertPercent = [...alertPercentRD];
+    copyAlertPercent[index] = num;
+    return setAlertPercentRD(copyAlertPercent)
+  }
+  // Volume
+  const updateVolume = (num,index) =>{
+    let copyVolume = [...volumeRD];
+    copyVolume[index] = num;
+    return setVolumeRD(copyVolume)
+  }
+  // console.log("======================")
+  console.log("StockList",stockList)
+  // console.log("StorePriceHistory",storePriceAllHistory)
+  // console.log("StockPrice",stockPrice)
+  // console.log("EnableRD",enableRD)
+  // console.log("AlertPercentRD",alertPercentRD)
+  // console.log("AlertPriceRD",alertPriceRD)
+  // console.log("AlertedRD",alertedRD)
+  // console.log("PriceOrPercent",priceOrPercentRD)
+  // console.log("Volume",volumeRD)
+  // console.log("Settings",settings)
+
+  const removeThis = (ticker,index) => {
+    console.log(index);
     setStockList(
-      stockList.filter((val) => {
-        if (val.Tick === ticker) return null;
-        return val;
+      [...stockList].filter((val) => {
+        if (val.Tick !== ticker) return val;
+        return null;
       })
     );
-  };
+    setStorePriceAllHistory(
+      [...storePriceAllHistory].filter((val,i) => {
+        if (i !== index) return val;
+        return null;
+      })
+    );
 
-  useEffect(() => {
-    stockList.map((val) => {
-      // Chart
-      setLineData([
-        ...lineData,
-        {
-          labels: [1, 2, 3],
-          datasets: [
-            {
-              label: "Example Stock",
-              data: [3, 10, 4, 8, 4, 15, 7, 20],
-              pointRadius: 0,
-              fill: false,
-              backgroundColor: day ? "#e9dfd4" : "#141e28",
-              borderColor: "#52ad59",
-            },
-          ],
-        },
-      ]);
-      //   Enable
-      setEnableRD([...enableRD, true]);
-      // Alert States
-      setAlertPercentRD([...alertPercentRD, 0]);
-      setAlertPriceRD([...alertPriceRD, 0]);
-      setAlertedRD([...alertedRD, false]);
-      setPriceOrPercentRD([...priceOrPercentRD, true]);
-      setVolumeRD([...volumeRD, 0.5]);
-      // Settings
-      setSettings([...settings, false]);
-      return;
-    });
-  }, [stockList]);
+    let copyStockPrice = [...stockPrice];
+    copyStockPrice.splice(index,1);
+    setStockPrice(copyStockPrice);
+
+    let copyEnable = [...enableRD];
+    copyEnable.splice(index,1);
+    setEnableRD(copyEnable);
+
+    let copyAlertPercent = [...alertPercentRD];
+    copyAlertPercent.splice(index,1);
+    setAlertPercentRD(copyAlertPercent);
+
+    let copyAlertPrice = [...alertPriceRD];
+    copyAlertPrice.splice(index,1);
+    setAlertPriceRD(copyAlertPrice);
+
+    let copyAlertedRD = [...alertedRD];
+    copyAlertedRD.splice(index,1);
+    setAlertedRD(copyAlertedRD);
+
+    let copyPriceOrPercentRD = [...priceOrPercentRD];
+    copyPriceOrPercentRD.splice(index,1);
+    setPriceOrPercentRD(copyPriceOrPercentRD);
+
+    let copyVolume = [...volumeRD];
+    copyVolume.splice(index,1);
+    setVolumeRD(copyVolume);
+
+    let copySettings = [...settings];
+    copySettings.splice(index,1);
+    setSettings(copySettings);
+  };
 
   //   // Volume
   //   useEffect(() => {
@@ -177,16 +229,17 @@ const StockDataExtended = () => {
 
   // Settings
   useEffect(() => {
-    if (settings[0]===true) {
-        console.log("hi")
-    //   setSampSettings(false);
-    }
-    if (sampSettings === true) {
-        console.log("bye")
-    //   setSettings(settings.fill(false));
+    if (settings.includes(true)) {
+      setSampSettings(false);
     }
     return;
   }, [settings]);
+  
+  useEffect(()=>{
+    if(sampSettings){
+      setSettings([...settings].fill(false))
+    }
+  },[sampSettings])
 
   if (stockList.length > 0) {
     return (
@@ -213,10 +266,39 @@ const StockDataExtended = () => {
               <p className="stockItemName">{Name}</p>
 
               <p className="stockItem">
-                {/* {val.data ? val.data[0].p.toFixed(2) : "-"} */}
+                ${stockPrice[index]}
               </p>
 
-              <div className="stockItemChart">{/* <Line></Line> */}</div>
+              <div className="stockItemChart">
+                <Line  
+                 data={trimLineDataHistory?{
+                      labels:trimLineDataHistory[index],
+                      datasets: [
+                        {
+                          label: val.Tick,
+                          data: trimLineDataHistory[index],
+                          pointRadius: 0,
+                          fill: false,
+                          backgroundColor: day ? "#e9dfd4" : "#141e28",
+                          borderColor: "#52ad59",
+                        },
+                      ],
+                    }:{
+                      labels: [1,2,3,4,5],
+                      datasets: [
+                        {
+                          label: "ABC",
+                          data: [1,1,1,1,1],
+                          pointRadius: 0,
+                          fill: false,
+                          backgroundColor: day ? "#e9dfd4" : "#141e28",
+                          borderColor: "orange"
+                        },
+                      ]
+                    }}
+                options={lineOptions}>
+                </Line>
+                </div>
 
               <div className="stockItemIcon">
                 <BsFillGearFill
@@ -224,8 +306,14 @@ const StockDataExtended = () => {
                   onClick={() => updateSettings(settings[index], index)}
                 ></BsFillGearFill>
 
-                <div className={settings[index]?(day?"settingsContainer showSettings daySettings":"settingsContainer showSettings nightSettings"):(day?"settingsContainer hideSettings daySettings":"settingsContainer hideSettings nightSettings")}>
+                <div className={settings[index]?
+                  (day?"settingsContainerAlt showSettings daySettings":"settingsContainerAlt showSettings nightSettings")
+                  :(day?"settingsContainerAlt hideSettings daySettings":"settingsContainerAlt hideSettings nightSettings")}
+                  onClick={e=>e.stopPropagation()}>
+                  
                   <div className="settingsItem">{val.Tick}</div>
+
+                  {enableRD[index]?(
                   <div className="settingsItem">
                     <p
                       style={
@@ -236,20 +324,30 @@ const StockDataExtended = () => {
                             }
                       }
                     >
-                      Enable/Disable:
+                      ENABLED
                     </p>
-                    {enableRD[index] ? (
                       <AiFillBell
                         className="settingsBell"
-                        // onClick={() => setEnableS(!enableS)}
+                        onClick={() => updateEnable(index)}
                       ></AiFillBell>
-                    ) : (
+                  </div>):(
+                  <div className="settingsItem">
+                    <p
+                      style={
+                        day
+                          ? null
+                          : {
+                              backgroundColor: "#1d2d3b",
+                            }
+                      }
+                    >
+                      DISABLED
+                    </p>
                       <FaBellSlash
                         className="settingsBell"
-                        // onClick={() => setEnableRD(!enableS)}
+                        onClick={() => updateDisable(index)}
                       ></FaBellSlash>
-                    )}
-                  </div>
+                  </div>)}
 
                   <div className="settingsItem">
                     <p
@@ -269,25 +367,21 @@ const StockDataExtended = () => {
                           Price:{" "}
                           <div className="changePricePercent">
                             <AiOutlineArrowLeft
-                            //   onClick={() => {
-                            //     setPriceOrPercentS(!priceOrPercentS);
-                            //   }}
+                              onClick={() => updatePrice(index)}
                               className="changeArrows"
                             ></AiOutlineArrowLeft>
                             <form onSubmit={(e) => e.preventDefault()}>
                               <input
                                 className="pricePercentForms"
                                 type="number"
-                                // value={alertPriceRD[index]}
-                                // onChange={(e) => {
-                                //   setAlertPriceS(e.target.valueAsNumber);
-                                // }}
+                                value={alertPriceRD[index]}
+                                onChange={(e) => {
+                                  updateAlertPrice(e.target.valueAsNumber,index);
+                                }}
                               />
                             </form>
                             <AiOutlineArrowRight
-                            //   onClick={() => {
-                            //     setPriceOrPercentS(!priceOrPercentS);
-                            //   }}
+                              onClick={() => updatePrice(index)}
                               className="changeArrows"
                             ></AiOutlineArrowRight>
                           </div>
@@ -297,23 +391,21 @@ const StockDataExtended = () => {
                           Percent:
                           <div className="changePricePercent">
                             <AiOutlineArrowLeft
-                            //   onClick={() => {
-                            //     setPriceOrPercentS(!priceOrPercentS);
-                            //   }}
+                              onClick={() => updatePercent(index)}
                               className="changeArrows"
                             ></AiOutlineArrowLeft>
                             <form onSubmit={(e) => e.preventDefault()}>
                               <input
                                 className="pricePercentForms"
                                 type="number"
-                                // value={alertPercentRD[index]}
-                                // onChange={(e) => {
-                                //   setAlertPercentS(e.target.valueAsNumber);
-                                // }}
+                                value={alertPercentRD[index]}
+                                onChange={(e) => {
+                                  updateAlertPercent(e.target.valueAsNumber,index);
+                                }}
                               />
                             </form>
                             <AiOutlineArrowRight
-                            //   onClick={() => {}}
+                              onClick={() => updatePercent(index)}
                               className="changeArrows"
                             ></AiOutlineArrowRight>
                           </div>
@@ -340,10 +432,10 @@ const StockDataExtended = () => {
                       min={0}
                       max={1}
                       step={0.01}
-                    //   value={volumeRD[index]}
-                      // onChange={(e) => {
-                      // setVolumeS(e.target.valueAsNumber);
-                      // }}
+                      value={volumeRD[index]}
+                      onChange={(e) => {
+                      updateVolume(e.target.valueAsNumber,index);
+                      }}
                     />
                   </div>
                 </div>
@@ -352,7 +444,9 @@ const StockDataExtended = () => {
               <div className="stockItemIcon">
                 <FaTrash
                   className="trashCan"
-                  onClick={() => removeThis(Tick)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeThis(Tick,index)}}
                 ></FaTrash>
               </div>
             </div>

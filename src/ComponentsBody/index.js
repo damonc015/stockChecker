@@ -8,27 +8,59 @@ import sound from "./Fishing-bell-sound-effect.mp3";
 export const List = createContext();
 
 const Index = () => {
-  // Watchlist
-  const [stocks, setStocks] = useState([]);
-  // Symbols to be parsed by websocket
-  const [stockList, setStockList] = useState([]);
   const { search, stockNames, setStockNames } = useContext(Night);
-  // Preview Stock
-  const [currentStock, setCurrentStock] = useState("");
-  // WebSocket Api Key
+  // Finnhub WebSocket Api Key
   const apiKey = "c55l1nqad3icdhg1270g";
+  // Symbols added to watchlist
+  const [stockList, setStockList] = useState([]);
+  // Preview Current Stock
+  const [currentStock, setCurrentStock] = useState("");
+  //Stock List
+  const [storeData, setStoreData] = useState([]);
+  // Current Stock Info
+  const [storePriceHistory, setStorePriceHistory] = useState("");
+  // All added stocks info
+  const [storePriceAllHistory, setStorePriceAllHistory] = useState([]);
+  // Finnhub WebSocket
+  const socket = useRef("");
+  const webSocketData = useRef("");
+  const filteredWS = useRef("");
   // Stock Names Api Key
   const apiKeyNames = "365fdc617d44b4b70556e939fbbb42f3";
-  //Fetched Stock List and Current Stock
-  const [storeData, setStoreData] = useState([]);
-  const [storePriceHistory, setStorePriceHistory] = useState("");
-  const [storePriceAllHistory, setStorePriceAllHistory] = useState([]);
+  // Stock Prices
+  const [stockPrice, setStockPrice] = useState([]);
   // Alarm Sound
   const audio = new Audio(sound);
   const dateRange = useRef(0);
+  // Alert States
+  // Enable/Disable Alert
+  const [enableRD, setEnableRD] = useState([]);
+  // Alert Percent, Price, and Alert State
+  const [alertPercentRD, setAlertPercentRD] = useState([]);
+  const [alertPriceRD, setAlertPriceRD] = useState([]);
+  const [alertedRD, setAlertedRD] = useState([]);
+  const [priceOrPercentRD, setPriceOrPercentRD] = useState([]);
+  // Set Volume
+  const [volumeRD, setVolumeRD] = useState([]);
 
-  // console.log(storePriceHistory);
-  // console.log(storePriceAllHistory);
+  //   Chart Settings
+  const lineDataHistory = storePriceAllHistory
+    ? storePriceAllHistory.filter(val => {
+        if (val.hasOwnProperty("History")) {
+          return val;
+        }
+      }).map(val=>{
+        return val.History.map(val=>{
+          return Number.parseFloat(val.close).toFixed(2);
+        });
+      })
+    : null;
+
+  const trimLineDataHistory = storePriceAllHistory
+    ? lineDataHistory.map((val) => {
+        return val.slice(38).reverse();
+      })
+    : null;
 
   // Date Range for Api
   const findDateRange = () => {
@@ -46,7 +78,7 @@ const Index = () => {
     dateRange.current = `from=${todayYear}-${lastSixMonths}-${todayDay}&to=${todayYear}-${todayMonth}-${todayDay}`;
   };
 
-  // Connect to Stock List
+  // Fetch All Stocks
   useEffect(() => {
     // Find Date Range for Current Stock
     findDateRange();
@@ -64,9 +96,9 @@ const Index = () => {
 
   // Connect to current stock
   useEffect(() => {
-    const historyURL = `https://financialmodelingprep.com/api/v3/historical-price-full/${currentStock.symbol}?${dateRange.current}&apikey=${apiKeyNames}`;
     if (currentStock) {
       try {
+        const historyURL = `https://financialmodelingprep.com/api/v3/historical-price-full/${currentStock.symbol}?${dateRange.current}&apikey=${apiKeyNames}`;
         let controller = new AbortController();
         (async () => {
           const response = await fetch(historyURL, {
@@ -106,51 +138,62 @@ const Index = () => {
     })();
   }, [search]);
 
-  // if (stocks){
-  //   try{
-  //     console.log(stocks)
-  //   // console.log(stocks[0].data[0].p.toFixed(2))
-  //   }catch{
-  //     console.log("hi")
-  //   }
-  // }
+  useEffect(() => {
+    // Websocket Connection == current Problem cannot update state while socket is on so need to turn socket off and back on
+    if (!socket.current) {
+      socket.current = new WebSocket(`wss://ws.finnhub.io?token=${apiKey}`);
+    }
+    socket.current.onopen = () => {
+      console.log("websocket open");
 
+      socket.current.onmessage = (e) => {
+        webSocketData.current = JSON.parse(e.data);
+        console.log(stockList);
+        // stock list {Tick:,Name:}
+        // console.log(webSocketData.current);
+        try {
+          let wsData = webSocketData.current.data.map((val) => {
+            return { lastPrice: val.p, Tick: val.s };
+          });
+          // console.log(wsData);
+          let copyStockList = [...stockList];
+          console.log("copy", copyStockList);
+          filteredWS.current = copyStockList.map((val1)=>{
+            return wsData.find((val2) => {
+              // if (val2.Tick === val1.Tick) {
+              //   // return {Tick:val2.Tick, lastPrice:val2.lastPrice};
+              // }
+            }
+            );
+          })
+          console.log(filteredWS.current);
+        } catch {
+          console.log("Websocket not working");
+        }
+      };
+
+      // Resubscribe to stocklist
+      stockList.map((stock) => {
+        return socket.current.send(
+          JSON.stringify({ type: "subscribe", symbol: `${stock}` })
+        );
+      });
+    };
+
+    socket.current.onclose = () => {
+      console.log("web close");
+    };
+    
+  }, [stockList]);
   // useEffect(()=>{
-  //     // Websocket Connection
-  //     const socket = new WebSocket(`wss://ws.finnhub.io?token=${apiKey}`);
-  //     if (stockList.length > 0){
-  //       socket.onopen = () => {
-  //         console.log("Websocket connected");
-  //             // socket.send(
-  //             //   JSON.stringify({ type: "subscribe", symbol: "AAPL" })
-  //             // );
-  //             // socket.send(
-  //             //   JSON.stringify({ type: "subscribe", symbol: "BINANCE:BTCUSDT" })
-  //             // );
-  //         // stockList.map((stock) => {
-  //         //   return socket.send(
-  //         //     JSON.stringify({ type: "subscribe", symbol: `${stock}` })
-  //         //   );
-  //         // });
-  //       };
-  //       socket.onmessage = (e) => {
-  //         setStocks([...stocks,JSON.parse(e.data)]);
-  //         stockList.map((stock) => {
-  //           return socket.send(
-  //             JSON.stringify({type: "unsubscribe",symbol: `${stock}`,})
-  //           );
-  //         });
-  //       };
-  //       socket.onclose = () => {
-  //         console.log("Websocket disconnected");
-  //       };
-  //     }
+  //   socket.current.close();
   // },[stockList])
 
   return (
     <List.Provider
       value={{
-        stocks,
+        stockPrice,
+        setStockPrice,
         stockNames,
         setStockNames,
         currentStock,
@@ -160,7 +203,22 @@ const Index = () => {
         storePriceHistory,
         audio,
         storePriceAllHistory,
-        setStorePriceAllHistory
+        setStorePriceAllHistory,
+        enableRD,
+        setEnableRD,
+        alertPercentRD,
+        setAlertPercentRD,
+        alertPriceRD,
+        setAlertPriceRD,
+        alertedRD,
+        setAlertedRD,
+        priceOrPercentRD,
+        setPriceOrPercentRD,
+        volumeRD,
+        setVolumeRD,
+        trimLineDataHistory,
+        socket,
+        webSocketData,
       }}
     >
       <section className="bodyContainer">
